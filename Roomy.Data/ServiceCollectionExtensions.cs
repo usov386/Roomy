@@ -30,8 +30,8 @@ public static class ServiceCollectionExtensions
             options.UseSqlServer(connectionString));
 
         // Register repositories
-        services.AddScoped<IRoomRepository, RoomRepository>();
-        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddTransient<IRoomRepository, RoomRepository>();
+        services.AddTransient<IBookingRepository, BookingRepository>();
         services.AddTransient<IHotelRepository, HotelRepository>();
 
         return services;

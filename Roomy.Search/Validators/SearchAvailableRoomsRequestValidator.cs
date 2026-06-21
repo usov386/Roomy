@@ -30,7 +30,7 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
 
         // Validate check-out date is after check-in date
         RuleFor(x => x.CheckOutDate)
-            .GreaterThan(x => x.CheckInDate)
+            .GreaterThanOrEqualTo(x => x.CheckInDate)
             .WithMessage("Check-out date must be after check-in date");
 
         // Validate check-out date is after check-in date

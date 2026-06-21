@@ -1,4 +1,5 @@
 using Roomy.Data;
+using Roomy.Booking;
 using Roomy.Search.API.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddControllers();
 // Register EF Core and repositories
 builder.Services.AddRoomyDataServices(builder.Configuration);
 builder.Services.AddRoomySearchServices();
+builder.Services.AddRoomyBookingServices();
 
 builder.Services.AddExceptionHandler<AppExceptionHandler>();
 builder.Services.AddProblemDetails();

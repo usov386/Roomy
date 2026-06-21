@@ -95,6 +95,7 @@ public class RoomSearchService(IRoomRepository roomRepository,
     private static RoomAvailableResponse MapRoomToResponse(Room room, SearchAvailableRoomsRequest request)
     {
         return new RoomAvailableResponse(
+            room.Id,
             room.Number,
             room.RoomPlanLinks
                 .Select(p => MapRoomPlanToDto(p, request))

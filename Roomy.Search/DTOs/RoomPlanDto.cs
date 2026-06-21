@@ -12,13 +12,8 @@ namespace Roomy.Search.DTOs;
 /// <param name="CancellationPolicy">Cancellation policy details</param>
 /// <param name="MealIncluded">Meal options included</param>
 public record RoomPlanDto(
-    [Required]
-    int PlanId,
-    [Required(ErrorMessage = "Plan name is required")]
-    string PlanName,
-    [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
+    int PlanId,    
+    string PlanName,    
     decimal TotalPriceForStay,
-    [Required]
     CancellationPolicyDto CancellationPolicy,
-    [Required(ErrorMessage = "Meal information is required")]
     string MealIncluded);

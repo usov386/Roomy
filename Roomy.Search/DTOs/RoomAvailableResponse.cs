@@ -11,7 +11,6 @@ namespace Roomy.Search.DTOs;
 /// <param name="Capacity">Maximum capacity</param>
 /// <param name="AvailablePlans">List of available pricing plans for this room</param>
 public record RoomAvailableResponse(
-    [Required(ErrorMessage = "Room number is required")]
+    Guid RoomId,
     string RoomNumber,
-    [Required(ErrorMessage = "At least one plan must be available")]
     List<RoomPlanDto> AvailablePlans);

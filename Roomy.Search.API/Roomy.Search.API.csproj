@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Roomy.Booking\Roomy.Booking.csproj" />
     <ProjectReference Include="..\Roomy.Data\Roomy.Data.csproj" />
     <ProjectReference Include="..\Roomy.Search\Roomy.Search.csproj" />
   </ItemGroup>
