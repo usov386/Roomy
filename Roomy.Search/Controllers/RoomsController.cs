@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Roomy.Search.DTOs;
@@ -12,10 +13,11 @@ namespace Roomy.Search.Controllers;
 /// Constructor for the controller
 /// </remarks>
 /// <param name="roomSearchService">Service for searching rooms</param>
+/// <param name="validator">Validator for search requests</param>
 /// <param name="logger">Logger for logging</param>
 [ApiController]
 [Route("api/rooms")]
-public class RoomsController(IRoomSearchService roomSearchService, ILogger<RoomsController> logger) : ControllerBase
+public class RoomsController(IRoomSearchService roomSearchService, IValidator<SearchAvailableRoomsRequest> validator, ILogger<RoomsController> logger) : ControllerBase
 {
     /// <summary>
     /// Searches for available rooms in a hotel based on specified parameters
@@ -32,6 +34,14 @@ public class RoomsController(IRoomSearchService roomSearchService, ILogger<Rooms
     {
         try
         {
+            // Validate the request
+            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+            if (!validationResult.IsValid)
+            {
+                logger.LogWarning("Validation failed for search request");
+                return BadRequest(validationResult.ToDictionary());
+            }
+
             logger.LogInformation("Received search request for hotel {HotelId}", request.HotelId);
 
             var result = await roomSearchService.SearchAvailableRoomsAsync(request, cancellationToken);

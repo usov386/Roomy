@@ -53,7 +53,7 @@ public class RoomSearchService(IRoomRepository roomRepository,
             bookings.Count);
 
         // Calculate minimum capacity based on adults and children
-        var minimumCapacity = request.NumberOfAdults + request.ChildrenAges?.Count ?? 0;
+        var minimumCapacity = request.NumberOfAdults + (request.ChildrenAges?.Count ?? 0);
         
         logger.LogInformation("Minimum required room capacity: {MinCapacity}", minimumCapacity);
 
