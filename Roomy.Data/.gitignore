@@ -1,0 +1,18 @@
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# LocalDB
+*.mdb
+
+# Build results
+bin/
+obj/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates

@@ -1,0 +1,272 @@
+using Roomy.Data.Models;
+
+namespace Roomy.Data;
+
+/// <summary>
+/// Class for populating the database with test data
+/// </summary>
+public static class DataSeeder
+{
+    /// <summary>
+    /// Populates the database with test data if it's empty
+    /// </summary>
+    /// <param name="context">AppDbContext</param>
+    public static async Task SeedAsync(AppDbContext context)
+    {
+        // Check if the database already contains hotels
+        if (context.Hotels.Any())
+        {
+            return; // Database is already populated
+        }
+
+        // Create users
+        var users = new List<User>
+        {
+            new User { Name = "Іван Петренко", Email = "ivan@example.com" },
+            new User { Name = "Марія Сидоренко", Email = "maria@example.com" },
+            new User { Name = "Петро Коваленко", Email = "petro@example.com" },
+            new User { Name = "Ольга Шевченко", Email = "olga@example.com" },
+            new User { Name = "Андрій Бондаренко", Email = "andrii@example.com" }
+        };
+
+        await context.Users.AddRangeAsync(users);
+        await context.SaveChangesAsync();
+
+        // Create hotels with fixed IDs for testing
+        var hotelId1 = new Guid("10000000-0000-0000-0000-000000000001");
+        var hotelId2 = new Guid("20000000-0000-0000-0000-000000000002");
+        var hotelId3 = new Guid("30000000-0000-0000-0000-000000000003");
+
+        var hotels = new List<Hotel>
+        {
+            new Hotel 
+            { 
+                Id = hotelId1, 
+                Name = "Grand Hotel Kyiv", 
+                City = "Київ", 
+                Address = "вул. Хрещатик, 2" 
+            },
+            new Hotel 
+            { 
+                Id = hotelId2, 
+                Name = "Budget Inn Lviv", 
+                City = "Львів", 
+                Address = "вул. Франка, 5" 
+            },
+            new Hotel 
+            { 
+                Id = hotelId3, 
+                Name = "Luxury Resort Odesa", 
+                City = "Одеса", 
+                Address = "Морський бульвар, 10" 
+            }
+        };
+
+        await context.Hotels.AddRangeAsync(hotels);
+        await context.SaveChangesAsync();
+
+        // Create rooms for each hotel
+        var rooms = new List<Room>();
+
+        // Rooms for Grand Hotel Kyiv
+        var grandHotel = hotels[0];
+        rooms.AddRange(new[]
+        {
+            new Room 
+            { 
+                HotelId = grandHotel.Id, 
+                Number = "101", 
+                Type = "Single", 
+                Capacity = 1, 
+                PricePerNight = 100m 
+            },
+            new Room 
+            { 
+                HotelId = grandHotel.Id, 
+                Number = "102", 
+                Type = "Double", 
+                Capacity = 2, 
+                PricePerNight = 150m 
+            },
+            new Room 
+            { 
+                HotelId = grandHotel.Id, 
+                Number = "103", 
+                Type = "Suite", 
+                Capacity = 3, 
+                PricePerNight = 250m 
+            },
+            new Room 
+            { 
+                HotelId = grandHotel.Id, 
+                Number = "104", 
+                Type = "Family", 
+                Capacity = 4, 
+                PricePerNight = 350m 
+            },
+            new Room 
+            { 
+                HotelId = grandHotel.Id, 
+                Number = "105", 
+                Type = "Double", 
+                Capacity = 2, 
+                PricePerNight = 150m 
+            }
+        });
+
+        // Rooms for Budget Inn Lviv
+        var budgetHotel = hotels[1];
+        rooms.AddRange(new[]
+        {
+            new Room 
+            { 
+                HotelId = budgetHotel.Id, 
+                Number = "201", 
+                Type = "Single", 
+                Capacity = 1, 
+                PricePerNight = 60m 
+            },
+            new Room 
+            { 
+                HotelId = budgetHotel.Id, 
+                Number = "202", 
+                Type = "Double", 
+                Capacity = 2, 
+                PricePerNight = 90m 
+            },
+            new Room 
+            { 
+                HotelId = budgetHotel.Id, 
+                Number = "203", 
+                Type = "Double", 
+                Capacity = 2, 
+                PricePerNight = 90m 
+            },
+            new Room 
+            { 
+                HotelId = budgetHotel.Id, 
+                Number = "204", 
+                Type = "Family", 
+                Capacity = 3, 
+                PricePerNight = 130m 
+            }
+        });
+
+        // Rooms for Luxury Resort Odesa
+        var luxuryHotel = hotels[2];
+        rooms.AddRange(new[]
+        {
+            new Room 
+            { 
+                HotelId = luxuryHotel.Id, 
+                Number = "301", 
+                Type = "Suite", 
+                Capacity = 2, 
+                PricePerNight = 300m 
+            },
+            new Room 
+            { 
+                HotelId = luxuryHotel.Id, 
+                Number = "302", 
+                Type = "Suite", 
+                Capacity = 3, 
+                PricePerNight = 400m 
+            },
+            new Room 
+            { 
+                HotelId = luxuryHotel.Id, 
+                Number = "303", 
+                Type = "Family", 
+                Capacity = 4, 
+                PricePerNight = 500m 
+            },
+            new Room 
+            { 
+                HotelId = luxuryHotel.Id, 
+                Number = "304", 
+                Type = "Double", 
+                Capacity = 2, 
+                PricePerNight = 250m 
+            }
+        });
+
+        await context.Rooms.AddRangeAsync(rooms);
+        await context.SaveChangesAsync();
+
+        // Bookings
+        var today = DateTime.Today;
+        var bookings = new List<Booking>
+        {
+            // Active bookings
+            new Booking 
+            { 
+                HotelId = hotelId1,
+                RoomId = rooms[0].Id, 
+                UserId = users[0].Id, 
+                CheckInDate = today.AddDays(1), 
+                CheckOutDate = today.AddDays(3)
+            },
+            new Booking 
+            { 
+                HotelId = hotelId1,
+                RoomId = rooms[1].Id, 
+                UserId = users[1].Id, 
+                CheckInDate = today.AddDays(5), 
+                CheckOutDate = today.AddDays(8) 
+            },
+            new Booking 
+            { 
+                HotelId = hotelId1,
+                RoomId = rooms[2].Id, 
+                UserId = users[2].Id, 
+                CheckInDate = today.AddDays(10), 
+                CheckOutDate = today.AddDays(15) 
+            },
+            // Минулі бронювання
+            new Booking 
+            { 
+                HotelId = hotelId1,
+                RoomId = rooms[3].Id, 
+                UserId = users[3].Id, 
+                CheckInDate = today.AddDays(-10), 
+                CheckOutDate = today.AddDays(-5) 
+            },
+            new Booking 
+            { 
+                HotelId = hotelId1,
+                RoomId = rooms[4].Id, 
+                UserId = users[4].Id, 
+                CheckInDate = today.AddDays(-3), 
+                CheckOutDate = today.AddDays(-1) 
+            },
+            // Більше бронювань для різних номерів
+            new Booking 
+            { 
+                HotelId = hotelId2,
+                RoomId = rooms[5].Id, 
+                UserId = users[0].Id, 
+                CheckInDate = today.AddDays(2), 
+                CheckOutDate = today.AddDays(6) 
+            },
+            new Booking 
+            { 
+                HotelId = hotelId2,
+                RoomId = rooms[6].Id, 
+                UserId = users[1].Id, 
+                CheckInDate = today.AddDays(7), 
+                CheckOutDate = today.AddDays(10) 
+            },
+            new Booking 
+            { 
+                HotelId = hotelId2,
+                RoomId = rooms[8].Id, 
+                UserId = users[2].Id, 
+                CheckInDate = today.AddDays(12), 
+                CheckOutDate = today.AddDays(14) 
+            }
+        };
+
+        await context.Bookings.AddRangeAsync(bookings);
+        await context.SaveChangesAsync();
+    }
+}

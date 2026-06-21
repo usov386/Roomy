@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Roomy.Data/Roomy.Data.csproj" />
+  <Project Path="Roomy.Search.API/Roomy.Search.API.csproj" />
+  <Project Path="Roomy.Search/Roomy.Search.csproj" Id="ba3b53be-341f-4662-b125-35236505ffbd" />
+</Solution>
