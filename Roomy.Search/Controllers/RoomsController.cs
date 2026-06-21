@@ -1,8 +1,9 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Roomy.Search.DTOs;
 using Roomy.Search.Filters;
-using Roomy.Search.Services;
+using Roomy.Search.Queries;
 
 namespace Roomy.Search.Controllers;
 
@@ -12,11 +13,11 @@ namespace Roomy.Search.Controllers;
 /// <remarks>
 /// Constructor for the controller
 /// </remarks>
-/// <param name="roomSearchService">Service for searching rooms</param>
+/// <param name="mediator">MediatR mediator for handling queries and commands</param>
 /// <param name="logger">Logger for logging</param>
 [ApiController]
 [Route("api/rooms")]
-public class RoomsController(IRoomSearchService roomSearchService, ILogger<RoomsController> logger) : ControllerBase
+public class RoomsController(IMediator mediator, ILogger<RoomsController> logger) : ControllerBase
 {
     /// <summary>
     /// Searches for available rooms in a hotel based on specified parameters
@@ -29,12 +30,12 @@ public class RoomsController(IRoomSearchService roomSearchService, ILogger<Rooms
     /// <response code="404">Hotel not found</response>
     /// <response code="500">Server error</response>
     [HttpGet]
-    [ValidateRequest]
     public async Task<IActionResult> SearchAvailableRooms([FromQuery] SearchAvailableRoomsRequest request, CancellationToken cancellationToken)
     {       
-        logger.LogInformation("Received search request for hotel {HotelId}", request.HotelId);
+        logger.LogInformation($"Received search request for hotel {request.HotelId}");
 
-        var result = await roomSearchService.SearchAvailableRoomsAsync(request, cancellationToken);
+        var query = new SearchAvailableRoomsQuery { Request = request };
+        var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }
 }

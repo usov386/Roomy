@@ -8,6 +8,5 @@ namespace Roomy.Search.DTOs;
 /// <param name="Type">Type of cancellation policy (NoRefund, FreeUntilDateTime)</param>
 /// <param name="FreeRefundUntilDateTime">Date/time until which free cancellation is allowed (only for FreeUntilDateTime type)</param>
 public record CancellationPolicyDto(
-    [Required(ErrorMessage = "Cancellation policy type is required")]
     string Type,
     DateTime? FreeRefundUntilDateTime = null);
