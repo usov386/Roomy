@@ -21,18 +21,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfigurationManager configuration)
     {
-        // Resolve project root and set DataDirectory for database file
-        var projectRoot = Directory.GetCurrentDirectory();
-        var dataDirectory = Path.Combine(projectRoot, "..", "Roomy.Data");
-        var dataDirectoryFull = Path.GetFullPath(dataDirectory); // Convert to absolute path
-        Directory.CreateDirectory(dataDirectoryFull); // Ensure directory exists
-        var mdfPath = Path.Combine(dataDirectoryFull, "RoomyDb.mdf");
-        AppDomain.CurrentDomain.SetData("DataDirectory", dataDirectoryFull);
-
-        // Configure DbContext with file-based MDF
-        var baseConnectionString = configuration.GetConnectionString("DefaultConnection")
+        // Configure DbContext with LocalDB (files stored in LocalDB default location)
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        var connectionString = $"{baseConnectionString};AttachDbFilename={mdfPath}";
 
         // Register DbContextFactory
         services.AddDbContextFactory<AppDbContext>(options =>

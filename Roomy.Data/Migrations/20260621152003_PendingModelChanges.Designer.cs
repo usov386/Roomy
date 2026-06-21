@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Roomy.Data;
 
@@ -11,9 +12,11 @@ using Roomy.Data;
 namespace Roomy.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260621152003_PendingModelChanges")]
+    partial class PendingModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace Roomy.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("FreeRefundUntilDays")
+                    b.Property<int>("FreeRefundUntilDays")
                         .HasColumnType("int");
 
                     b.Property<int>("RoomPlanId")
@@ -128,9 +131,6 @@ namespace Roomy.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("NumberOfSubRooms")
-                        .HasColumnType("int");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
@@ -165,36 +165,15 @@ namespace Roomy.Data.Migrations
                         .HasPrecision(10, 2)
                         .HasColumnType("decimal(10,2)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("RoomPlans");
-                });
-
-            modelBuilder.Entity("Roomy.Data.Models.RoomPlanLink", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<Guid>("RoomId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoomPlanId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomPlanId");
-
-                    b.HasIndex("RoomId", "RoomPlanId")
+                    b.HasIndex("RoomId", "Name")
                         .IsUnique();
 
-                    b.ToTable("RoomPlanLinks");
+                    b.ToTable("RoomPlans");
                 });
 
             modelBuilder.Entity("Roomy.Data.Models.User", b =>
@@ -264,23 +243,15 @@ namespace Roomy.Data.Migrations
                     b.Navigation("Hotel");
                 });
 
-            modelBuilder.Entity("Roomy.Data.Models.RoomPlanLink", b =>
+            modelBuilder.Entity("Roomy.Data.Models.RoomPlan", b =>
                 {
                     b.HasOne("Roomy.Data.Models.Room", "Room")
-                        .WithMany("RoomPlanLinks")
+                        .WithMany("Plans")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Roomy.Data.Models.RoomPlan", "RoomPlan")
-                        .WithMany("RoomPlanLinks")
-                        .HasForeignKey("RoomPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Room");
-
-                    b.Navigation("RoomPlan");
                 });
 
             modelBuilder.Entity("Roomy.Data.Models.Hotel", b =>
@@ -292,14 +263,12 @@ namespace Roomy.Data.Migrations
                 {
                     b.Navigation("Bookings");
 
-                    b.Navigation("RoomPlanLinks");
+                    b.Navigation("Plans");
                 });
 
             modelBuilder.Entity("Roomy.Data.Models.RoomPlan", b =>
                 {
                     b.Navigation("CancellationPolicy");
-
-                    b.Navigation("RoomPlanLinks");
                 });
 
             modelBuilder.Entity("Roomy.Data.Models.User", b =>

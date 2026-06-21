@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Logging;
+using Roomy.Data.Enums;
+using Roomy.Data.Models;
 using Roomy.Data.Repositories;
 using Roomy.Search.DTOs;
 
@@ -24,6 +26,7 @@ public class RoomSearchService(IRoomRepository roomRepository,
     /// <returns>Search result with available rooms</returns>
     /// <exception cref="ArgumentException">Thrown when parameters are invalid</exception>
     /// <exception cref="KeyNotFoundException">Thrown when the hotel is not found</exception>
+
     public async Task<SearchResultResponse> SearchAvailableRoomsAsync(SearchAvailableRoomsRequest request, CancellationToken cancellationToken)
     {
         logger.LogInformation(
@@ -38,10 +41,11 @@ public class RoomSearchService(IRoomRepository roomRepository,
         
         await Task.WhenAll(roomsTask, bookingsTask);
         
-        var roomsInHotel = roomsTask.Result;
+        var roomsInHotel = roomsTask.Result
+            .Where(r => r.NumberOfSubRooms >= request.NumberOfRooms)
+            .ToList();
 
-        logger.LogInformation("Hotel {HotelId} has {TotalRooms} rooms in total", 
-            request.HotelId, roomsInHotel.Count);
+        logger.LogInformation($"Hotel {request.HotelId} has {roomsInHotel.Count} rooms in with number of sub rooms {request.NumberOfRooms}");
 
         // Get all bookings for this hotel for the specified period
         var bookings = bookingsTask.Result
@@ -57,20 +61,49 @@ public class RoomSearchService(IRoomRepository roomRepository,
         
         logger.LogInformation("Minimum required room capacity: {MinCapacity}", minimumCapacity);
 
-        // Filter available rooms
-        var availableRooms = roomsInHotel
-            .Where(r => !bookings.Contains(r.Id) &&
-                       r.Capacity >= minimumCapacity)
-            .Select(r => new RoomAvailableResponse(
-                r.Id,
-                r.Number,
-                r.Type,
-                r.Capacity,
-                r.PricePerNight))
+        // Filter available rooms by capacity
+        var roomsWithCapacity = roomsInHotel
+            .Where(r => r.Capacity >= minimumCapacity);
+
+        // Filter out booked rooms and map to response DTOs
+        var availableRooms = roomsWithCapacity
+            .Where(r => !bookings.Contains(r.Id))
+            .Select(r => MapRoomToResponse(r, request))
             .ToList();
 
         logger.LogInformation("Found {AvailableCount} available rooms", availableRooms.Count);
 
         return new SearchResultResponse(availableRooms, availableRooms.Count);
+    }
+
+    private static RoomPlanDto MapRoomPlanToDto(RoomPlanLink roomPlanLink, SearchAvailableRoomsRequest request)
+    {
+        var numberOfNights = (request.CheckOutDate - request.CheckInDate).Days;
+        var totalPrice = roomPlanLink.RoomPlan.PricePerNight * numberOfNights;
+        var cancellationPolicy = roomPlanLink.RoomPlan.CancellationPolicy;
+        DateTime? freeRefundUntil = cancellationPolicy?.FreeRefundUntilDays != null
+            ? request.CheckInDate.AddDays(cancellationPolicy.FreeRefundUntilDays.Value)
+            : null;
+
+        return new RoomPlanDto(
+            roomPlanLink.RoomPlan.Id,
+            roomPlanLink.RoomPlan.Name,
+            totalPrice,
+            new CancellationPolicyDto(
+                cancellationPolicy?.Type.ToString() ?? CancellationPolicyType.NoRefund.ToString(),
+                freeRefundUntil),
+            roomPlanLink.RoomPlan.MealIncluded.ToString());
+    }
+
+    private static RoomAvailableResponse MapRoomToResponse(Room room, SearchAvailableRoomsRequest request)
+    {
+        return new RoomAvailableResponse(
+            room.Id,
+            room.Number,
+            room.Type.ToString(),
+            room.Capacity,
+            room.RoomPlanLinks
+                .Select(p => MapRoomPlanToDto(p, request))
+                .ToList());
     }
 }

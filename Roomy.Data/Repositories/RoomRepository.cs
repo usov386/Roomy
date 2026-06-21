@@ -21,7 +21,11 @@ namespace Roomy.Data.Repositories
             // Use DbContextFactory to ensure thread-safe database access
             using var context = contextFactory.CreateDbContext();
             return await context.Rooms
+                .AsNoTracking()
                 .Where(r => r.HotelId == hotelId)
+                .Include(r => r.RoomPlanLinks)
+                    .ThenInclude(p => p.RoomPlan)
+                        .ThenInclude(p => p.CancellationPolicy)
                 .ToListAsync(cancellationToken);
         }
     }

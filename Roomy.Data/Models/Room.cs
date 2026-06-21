@@ -1,3 +1,5 @@
+using Roomy.Data.Enums;
+
 namespace Roomy.Data.Models;
 
 /// <summary>
@@ -21,9 +23,9 @@ public class Room
     public required string Number { get; set; }
 
     /// <summary>
-    /// Room type (e.g. "Single", "Double", "Suite", "Family")
+    /// Room type (e.g. Single, Double, Suite, Family)
     /// </summary>
-    public required string Type { get; set; }
+    public RoomType Type { get; set; }
 
     /// <summary>
     /// Maximum capacity (number of guests)
@@ -31,9 +33,9 @@ public class Room
     public int Capacity { get; set; }
 
     /// <summary>
-    /// Price per night
+    /// Number of sub-rooms within this room (e.g., bedrooms in a suite)
     /// </summary>
-    public decimal PricePerNight { get; set; }
+    public int NumberOfSubRooms { get; set; }
 
     /// <summary>
     /// Navigation property for the hotel
@@ -41,7 +43,12 @@ public class Room
     public Hotel? Hotel { get; set; }
 
     /// <summary>
-    /// Навігаційна властивість для бронювань цього номера
+    /// Navigation property for bookings of this room
     /// </summary>
     public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    /// <summary>
+    /// Navigation property for pricing plans linked to this room via junction table
+    /// </summary>
+    public ICollection<RoomPlanLink> RoomPlanLinks { get; set; } = new List<RoomPlanLink>();
 }

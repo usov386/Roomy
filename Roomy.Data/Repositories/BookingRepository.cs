@@ -19,6 +19,7 @@ public class BookingRepository(IDbContextFactory<AppDbContext> contextFactory) :
         // Use DbContextFactory to ensure thread-safe database access
         using var context = contextFactory.CreateDbContext();
         return await context.Bookings
+            .AsNoTracking()
             .Where(b => b.HotelId == hotelId)
             .ToListAsync(cancellationToken);
     }

@@ -16,7 +16,8 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     public AppDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseSqlServer("Server=(local);Database=Roomy;Integrated Security=true;TrustServerCertificate=true");
+        var connectionString = "Server=localhost\\SQLEXPRESS;Database=RoomyDb;Integrated Security=true;TrustServerCertificate=true;MultipleActiveResultSets=true";
+        optionsBuilder.UseSqlServer(connectionString);
         
         return new AppDbContext(optionsBuilder.Options);
     }

@@ -9,7 +9,7 @@ namespace Roomy.Search.DTOs;
 /// <param name="RoomNumber">Room number</param>
 /// <param name="Type">Room type</param>
 /// <param name="Capacity">Maximum capacity</param>
-/// <param name="PricePerNight">Price per night</param>
+/// <param name="AvailablePlans">List of available pricing plans for this room</param>
 public record RoomAvailableResponse(
     [Required]
     Guid RoomId,
@@ -19,5 +19,5 @@ public record RoomAvailableResponse(
     string Type,
     [Range(1, int.MaxValue, ErrorMessage = "Capacity must be greater than 0")]
     int Capacity,
-    [Range(0, double.MaxValue, ErrorMessage = "Price must be greater than or equal to 0")]
-    decimal PricePerNight);
+    [Required(ErrorMessage = "At least one plan must be available")]
+    List<RoomPlanDto> AvailablePlans);

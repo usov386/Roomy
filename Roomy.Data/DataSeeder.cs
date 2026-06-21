@@ -1,3 +1,4 @@
+using Roomy.Data.Enums;
 using Roomy.Data.Models;
 
 namespace Roomy.Data;
@@ -76,41 +77,41 @@ public static class DataSeeder
             { 
                 HotelId = grandHotel.Id, 
                 Number = "101", 
-                Type = "Single", 
-                Capacity = 1, 
-                PricePerNight = 100m 
+                Type = RoomType.Single, 
+                Capacity = 1,
+                NumberOfSubRooms = 1
             },
             new Room 
             { 
                 HotelId = grandHotel.Id, 
                 Number = "102", 
-                Type = "Double", 
-                Capacity = 2, 
-                PricePerNight = 150m 
+                Type = RoomType.Double, 
+                Capacity = 2,
+                NumberOfSubRooms = 1
             },
             new Room 
             { 
                 HotelId = grandHotel.Id, 
                 Number = "103", 
-                Type = "Suite", 
-                Capacity = 3, 
-                PricePerNight = 250m 
+                Type = RoomType.Suite, 
+                Capacity = 3,
+                NumberOfSubRooms = 2
             },
             new Room 
             { 
                 HotelId = grandHotel.Id, 
                 Number = "104", 
-                Type = "Family", 
-                Capacity = 4, 
-                PricePerNight = 350m 
+                Type = RoomType.Family, 
+                Capacity = 4,
+                NumberOfSubRooms = 3
             },
             new Room 
             { 
                 HotelId = grandHotel.Id, 
                 Number = "105", 
-                Type = "Double", 
-                Capacity = 2, 
-                PricePerNight = 150m 
+                Type = RoomType.Double, 
+                Capacity = 2,
+                NumberOfSubRooms = 1
             }
         });
 
@@ -122,33 +123,33 @@ public static class DataSeeder
             { 
                 HotelId = budgetHotel.Id, 
                 Number = "201", 
-                Type = "Single", 
-                Capacity = 1, 
-                PricePerNight = 60m 
+                Type = RoomType.Single, 
+                Capacity = 1,
+                NumberOfSubRooms = 1
             },
             new Room 
             { 
                 HotelId = budgetHotel.Id, 
                 Number = "202", 
-                Type = "Double", 
-                Capacity = 2, 
-                PricePerNight = 90m 
+                Type = RoomType.Double, 
+                Capacity = 2,
+                NumberOfSubRooms = 1
             },
             new Room 
             { 
                 HotelId = budgetHotel.Id, 
                 Number = "203", 
-                Type = "Double", 
-                Capacity = 2, 
-                PricePerNight = 90m 
+                Type = RoomType.Double, 
+                Capacity = 2,
+                NumberOfSubRooms = 1
             },
             new Room 
             { 
                 HotelId = budgetHotel.Id, 
                 Number = "204", 
-                Type = "Family", 
-                Capacity = 3, 
-                PricePerNight = 130m 
+                Type = RoomType.Family, 
+                Capacity = 3,
+                NumberOfSubRooms = 2
             }
         });
 
@@ -160,37 +161,106 @@ public static class DataSeeder
             { 
                 HotelId = luxuryHotel.Id, 
                 Number = "301", 
-                Type = "Suite", 
-                Capacity = 2, 
-                PricePerNight = 300m 
+                Type = RoomType.Suite, 
+                Capacity = 2,
+                NumberOfSubRooms = 2
             },
             new Room 
             { 
                 HotelId = luxuryHotel.Id, 
                 Number = "302", 
-                Type = "Suite", 
-                Capacity = 3, 
-                PricePerNight = 400m 
+                Type = RoomType.Suite, 
+                Capacity = 3,
+                NumberOfSubRooms = 2
             },
             new Room 
             { 
                 HotelId = luxuryHotel.Id, 
                 Number = "303", 
-                Type = "Family", 
-                Capacity = 4, 
-                PricePerNight = 500m 
+                Type = RoomType.Family, 
+                Capacity = 4,
+                NumberOfSubRooms = 3
             },
             new Room 
             { 
                 HotelId = luxuryHotel.Id, 
                 Number = "304", 
-                Type = "Double", 
-                Capacity = 2, 
-                PricePerNight = 250m 
+                Type = RoomType.Double, 
+                Capacity = 2,
+                NumberOfSubRooms = 1
             }
         });
 
         await context.Rooms.AddRangeAsync(rooms);
+        await context.SaveChangesAsync();
+
+        // Create global pricing plans (not tied to specific rooms)
+        var standardPlan = new RoomPlan
+        {
+            Name = "Standard",
+            PricePerNight = 100m, // Fixed standard price
+            MealIncluded = MealIncluded.Breakfast,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // Standard cancellation policy - free until 7 days before
+        var standardPolicy = new CancellationPolicy
+        {
+            Type = CancellationPolicyType.FreeUntilDateTime,
+            FreeRefundUntilDays = 7
+        };
+        standardPlan.CancellationPolicy = standardPolicy;
+
+        await context.RoomPlans.AddAsync(standardPlan);
+        await context.SaveChangesAsync();
+
+        var budgetPlan = new RoomPlan
+        {
+            Name = "Budget (Non-Refundable)",
+            PricePerNight = 85m, // 15% discount
+            MealIncluded = MealIncluded.None,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // Budget cancellation policy - no refunds
+        var budgetPolicy = new CancellationPolicy
+        {
+            Type = CancellationPolicyType.NoRefund            
+        };
+        budgetPlan.CancellationPolicy = budgetPolicy;
+
+        await context.RoomPlans.AddAsync(budgetPlan);
+        await context.SaveChangesAsync();
+
+        var premiumPlan = new RoomPlan
+        {
+            Name = "Premium",
+            PricePerNight = 115m, // 15% premium
+            MealIncluded = MealIncluded.BreakfastLunchDinner,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        // Premium cancellation policy - free cancellation until day before check-in
+        var premiumPolicy = new CancellationPolicy
+        {
+            Type = CancellationPolicyType.FreeUntilDateTime,
+            FreeRefundUntilDays = 1
+        };
+        premiumPlan.CancellationPolicy = premiumPolicy;
+
+        await context.RoomPlans.AddAsync(premiumPlan);
+        await context.SaveChangesAsync();
+
+        // Link rooms to plans via junction table
+        var roomRoomPlans = new List<RoomPlanLink>();
+        foreach (var room in rooms)
+        {
+            roomRoomPlans.Add(new RoomPlanLink { RoomId = room.Id, RoomPlanId = standardPlan.Id });
+            roomRoomPlans.Add(new RoomPlanLink { RoomId = room.Id, RoomPlanId = budgetPlan.Id });
+            roomRoomPlans.Add(new RoomPlanLink { RoomId = room.Id, RoomPlanId = premiumPlan.Id });
+        }
+
+        await context.RoomPlanLinks.AddRangeAsync(roomRoomPlans);
         await context.SaveChangesAsync();
 
         // Bookings
