@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Roomy.Data;
+using Roomy.Data.Repositories;
 using Roomy.Search.DTOs;
 
 namespace Roomy.Search.Validators;
@@ -10,20 +12,20 @@ namespace Roomy.Search.Validators;
 /// </summary>
 public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvailableRoomsRequest>
 {
-    private readonly AppDbContext _context;
+    private readonly IHotelRepository hotelRepository;
 
     /// <summary>
     /// Constructor that defines validation rules
     /// </summary>
-    public SearchAvailableRoomsRequestValidator(AppDbContext context)
+    public SearchAvailableRoomsRequestValidator(IHotelRepository hotelRepository)
     {
-        _context = context;
-        
+        this.hotelRepository = hotelRepository;
+
         // Validate HotelId is not empty
         RuleFor(x => x.HotelId)
             .NotEmpty()
             .WithMessage("Hotel ID is required")
-            .MustAsync(HotelExistsAsync)
+            .MustAsync(hotelRepository.ExistsAsync)
             .WithMessage("Hotel with the specified ID not found");
 
         // Validate check-out date is after check-in date
@@ -63,13 +65,5 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
                 .LessThanOrEqualTo(18)
                 .WithMessage("Children ages must be between 0 and 18"))
             .When(x => x.ChildrenAges != null && x.ChildrenAges.Count > 0);
-    }
-
-    /// <summary>
-    /// Validates that the hotel exists in the database
-    /// </summary>
-    private async Task<bool> HotelExistsAsync(Guid hotelId, CancellationToken cancellationToken)
-    {
-        return await _context.Hotels.AnyAsync(h => h.Id == hotelId, cancellationToken);
     }
 }

@@ -24,9 +24,6 @@ public class RoomSearchService(IRoomRepository roomRepository,
     /// </summary>
     /// <param name="request">Search parameters</param>
     /// <returns>Search result with available rooms</returns>
-    /// <exception cref="ArgumentException">Thrown when parameters are invalid</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when the hotel is not found</exception>
-
     public async Task<SearchResultResponse> SearchAvailableRoomsAsync(SearchAvailableRoomsRequest request, CancellationToken cancellationToken)
     {
         logger.LogInformation(
@@ -98,10 +95,7 @@ public class RoomSearchService(IRoomRepository roomRepository,
     private static RoomAvailableResponse MapRoomToResponse(Room room, SearchAvailableRoomsRequest request)
     {
         return new RoomAvailableResponse(
-            room.Id,
             room.Number,
-            room.Type.ToString(),
-            room.Capacity,
             room.RoomPlanLinks
                 .Select(p => MapRoomPlanToDto(p, request))
                 .ToList());

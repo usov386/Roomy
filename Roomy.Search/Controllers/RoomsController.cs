@@ -1,7 +1,7 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Roomy.Search.DTOs;
+using Roomy.Search.Filters;
 using Roomy.Search.Services;
 
 namespace Roomy.Search.Controllers;
@@ -13,11 +13,10 @@ namespace Roomy.Search.Controllers;
 /// Constructor for the controller
 /// </remarks>
 /// <param name="roomSearchService">Service for searching rooms</param>
-/// <param name="validator">Validator for search requests</param>
 /// <param name="logger">Logger for logging</param>
 [ApiController]
 [Route("api/rooms")]
-public class RoomsController(IRoomSearchService roomSearchService, IValidator<SearchAvailableRoomsRequest> validator, ILogger<RoomsController> logger) : ControllerBase
+public class RoomsController(IRoomSearchService roomSearchService, ILogger<RoomsController> logger) : ControllerBase
 {
     /// <summary>
     /// Searches for available rooms in a hotel based on specified parameters
@@ -30,37 +29,12 @@ public class RoomsController(IRoomSearchService roomSearchService, IValidator<Se
     /// <response code="404">Hotel not found</response>
     /// <response code="500">Server error</response>
     [HttpGet]
+    [ValidateRequest]
     public async Task<IActionResult> SearchAvailableRooms([FromQuery] SearchAvailableRoomsRequest request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Validate the request
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-            if (!validationResult.IsValid)
-            {
-                logger.LogWarning("Validation failed for search request");
-                return BadRequest(validationResult.ToDictionary());
-            }
+    {       
+        logger.LogInformation("Received search request for hotel {HotelId}", request.HotelId);
 
-            logger.LogInformation("Received search request for hotel {HotelId}", request.HotelId);
-
-            var result = await roomSearchService.SearchAvailableRoomsAsync(request, cancellationToken);
-            return Ok(result);
-        }
-        catch (ArgumentException ex)
-        {
-            logger.LogWarning("Invalid request: {Message}", ex.Message);
-            return BadRequest(new { error = ex.Message });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            logger.LogWarning("Hotel not found: {Message}", ex.Message);
-            return NotFound(new { error = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unknown error during room search");
-            return StatusCode(500, new { error = "Internal server error" });
-        }
+        var result = await roomSearchService.SearchAvailableRoomsAsync(request, cancellationToken);
+        return Ok(result);
     }
 }

@@ -1,5 +1,7 @@
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Roomy.Search.Filters;
 using Roomy.Search.Services;
 using Roomy.Search.Validators;
 
@@ -22,9 +24,29 @@ public static class ServiceCollectionExtensions
         // Register FluentValidation
         services.AddValidatorsFromAssemblyContaining<SearchAvailableRoomsRequestValidator>();
 
+        // Register action filter for validation
+        services.AddScoped<ValidateRequestAttribute>();
+
         // Register search service
         services.AddScoped<IRoomSearchService, RoomSearchService>();
 
         return services;
+    }
+
+
+    public static async Task SeedAsync(this IServiceProvider services)
+    {
+        using (var scope = services.CreateScope())
+        {
+            var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+            using var dbContext = dbContextFactory.CreateDbContext();
+
+            // Create database and apply migrations
+            await dbContext.Database.MigrateAsync();
+
+            // Populate seed data
+            await DataSeeder.SeedAsync(dbContext);
+        }
+
     }
 }

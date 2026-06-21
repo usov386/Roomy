@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
         // Register repositories
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddTransient<IHotelRepository, HotelRepository>();
 
         return services;
     }

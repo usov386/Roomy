@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Roomy.Data.Enums;
 using Roomy.Data.Models;
 
@@ -8,6 +9,11 @@ namespace Roomy.Data;
 /// </summary>
 public static class DataSeeder
 {
+    /// <summary>
+    /// Populates the database with test data if it's empty
+    /// </summary>
+    
+
     /// <summary>
     /// Populates the database with test data if it's empty
     /// </summary>
