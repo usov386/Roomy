@@ -71,7 +71,7 @@ cd Roomy.Search.API
 dotnet run
 ```
 
-The API will start on `https://localhost:5001` by default. Swagger UI will be available at the root path in development mode.
+The API will start on `https://localhost:7213` by default. Swagger UI will be available at the root path in development mode.
 
 ### Running Tests
 
