@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Roomy.Search.DTOs;
-using Roomy.Search.Filters;
 using Roomy.Search.Queries;
 
 namespace Roomy.Search.Controllers;

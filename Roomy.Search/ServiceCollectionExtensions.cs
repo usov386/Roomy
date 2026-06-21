@@ -1,10 +1,7 @@
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Roomy.Search.Behaviors;
-using Roomy.Search.Filters;
-using Roomy.Search.Services;
 using Roomy.Search.Validators;
 
 namespace Roomy.Data;
@@ -22,16 +19,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRoomySearchServices(
         this IServiceCollection services)
     {
-
-        // Register FluentValidation
         services.AddValidatorsFromAssemblyContaining<SearchAvailableRoomsRequestValidator>();
-
-        // Register action filter for validation
-        services.AddScoped<ValidateRequestAttribute>();
-
-        // Register search service
-        services.AddScoped<IRoomSearchService, RoomSearchService>();
-
         // Register MediatR and handlers
         services.AddMediatR(cfg =>
         {

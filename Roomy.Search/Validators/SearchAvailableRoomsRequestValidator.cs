@@ -29,6 +29,11 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
             .MustAsync(hotelRepository.ExistsAsync)
             .WithMessage("Hotel with the specified ID not found");
 
+        // Validate check-out date 
+        RuleFor(x => x.Request.CheckOutDate)
+            .Null()
+            .WithMessage("Check-out date is required");
+
         // Validate check-out date is after check-in date
         RuleFor(x => x.Request.CheckOutDate)
             .GreaterThanOrEqualTo(x => x.Request.CheckInDate)
@@ -38,6 +43,11 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
         RuleFor(x => x.Request.CheckOutDate)
             .LessThanOrEqualTo(x => x.Request.CheckInDate.AddMonths(1))
             .WithMessage("Check-out date must be later than the check‑in date and within one month");
+
+        // Validate check-in date 
+        RuleFor(x => x.Request.CheckInDate)
+            .Null()
+            .WithMessage("Check-in date is required");
 
         // Validate check-in date is not in the past
         RuleFor(x => x.Request.CheckInDate)
