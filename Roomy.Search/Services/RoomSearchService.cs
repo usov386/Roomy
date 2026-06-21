@@ -27,10 +27,8 @@ public class RoomSearchService(IRoomRepository roomRepository,
     public async Task<SearchResultResponse> SearchAvailableRoomsAsync(SearchAvailableRoomsRequest request, CancellationToken cancellationToken)
     {
         logger.LogInformation(
-            "Searching for available rooms in hotel {HotelId} for period {CheckIn:yyyy-MM-dd} - {CheckOut:yyyy-MM-dd}. " +
-            "Requires: {NumberOfRooms} rooms for {NumberOfAdults} adults",
-            request.HotelId, request.CheckInDate, request.CheckOutDate, 
-            request.NumberOfRooms, request.NumberOfAdults);
+            $"Searching for available rooms in hotel {request.HotelId} for period {request.CheckInDate:yyyy-MM-dd} - {request.CheckOutDate:yyyy-MM-dd}. " +
+            $"Requires: {request.NumberOfRooms} rooms for {request.NumberOfAdults} adults");
 
         // Get all rooms and bookings concurrently from their respective repositories
         var roomsTask = roomRepository.GetByHotelIdAsync(request.HotelId, cancellationToken);
@@ -50,13 +48,12 @@ public class RoomSearchService(IRoomRepository roomRepository,
                         b.CheckOutDate > request.CheckInDate)
             .ToLookup(b => b.RoomId);
 
-        logger.LogInformation("{BookedCount} rooms are booked for the specified period", 
-            bookings.Count);
+        logger.LogInformation($"{bookings.Count} rooms are booked for the specified period");
 
         // Calculate minimum capacity based on adults and children
         var minimumCapacity = request.NumberOfAdults + (request.ChildrenAges?.Count ?? 0);
         
-        logger.LogInformation("Minimum required room capacity: {MinCapacity}", minimumCapacity);
+        logger.LogInformation($"Minimum required room capacity: {minimumCapacity}");
 
         // Filter available rooms by capacity
         var roomsWithCapacity = roomsInHotel
@@ -68,7 +65,7 @@ public class RoomSearchService(IRoomRepository roomRepository,
             .Select(r => MapRoomToResponse(r, request))
             .ToList();
 
-        logger.LogInformation("Found {AvailableCount} available rooms", availableRooms.Count);
+        logger.LogInformation($"Found {availableRooms.Count} available rooms");
 
         return new SearchResultResponse(availableRooms, availableRooms.Count);
     }
