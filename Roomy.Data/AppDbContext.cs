@@ -87,6 +87,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(r => r.Id);
             entity.Property(r => r.Number).IsRequired().HasMaxLength(50);
+            entity.Property(p => p.PricePerNight).IsRequired().HasPrecision(18, 2);
             entity.Property(r => r.Type).IsRequired().HasConversion<int>(); // Store enum as int
             entity.Property(r => r.Capacity).IsRequired();
             entity.Property(r => r.HotelId).IsRequired();
@@ -136,7 +137,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(p => p.Id);
             entity.Property(p => p.Name).IsRequired().HasMaxLength(255);
-            entity.Property(p => p.PricePerNight).IsRequired().HasPrecision(10, 2);
+            entity.Property(p => p.PriceFactor).IsRequired().HasPrecision(5, 2);
             entity.Property(p => p.MealIncluded).IsRequired().HasConversion<int>(); // Store enum as int
             entity.Property(p => p.CreatedAt).IsRequired();
 

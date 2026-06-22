@@ -5,7 +5,7 @@ namespace Roomy.Data.Models;
 /// <summary>
 /// Represents a pricing plan that can be linked to multiple rooms with cancellation policy and meal information
 /// </summary>
-public class    RoomPlan
+public class RoomPlan
 {
     /// <summary>
     /// Unique identifier
@@ -18,9 +18,9 @@ public class    RoomPlan
     public required string Name { get; set; }
 
     /// <summary>
-    /// Price per night for this plan
+    /// Price Factor (e.g. 1, 1.25, 1.5)
     /// </summary>
-    public decimal PricePerNight { get; set; }
+    public decimal PriceFactor { get; set; }
 
     /// <summary>
     /// Meal options included in this plan

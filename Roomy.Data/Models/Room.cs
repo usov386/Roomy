@@ -38,6 +38,11 @@ public class Room
     public int NumberOfSubRooms { get; set; }
 
     /// <summary>
+    /// Price per night for this room
+    /// </summary>
+    public decimal PricePerNight { get; set; }
+
+    /// <summary>
     /// Navigation property for the hotel
     /// </summary>
     public Hotel? Hotel { get; set; }

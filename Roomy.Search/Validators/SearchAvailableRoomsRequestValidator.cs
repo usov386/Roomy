@@ -31,12 +31,12 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
 
         // Validate check-out date 
         RuleFor(x => x.Request.CheckOutDate)
-            .Null()
+            .NotNull()
             .WithMessage("Check-out date is required");
 
         // Validate check-out date is after check-in date
         RuleFor(x => x.Request.CheckOutDate)
-            .GreaterThanOrEqualTo(x => x.Request.CheckInDate)
+            .GreaterThan(x => x.Request.CheckInDate)
             .WithMessage("Check-out date must be after check-in date");
 
         // Validate check-out date is after check-in date
@@ -46,7 +46,7 @@ public class SearchAvailableRoomsRequestValidator : AbstractValidator<SearchAvai
 
         // Validate check-in date 
         RuleFor(x => x.Request.CheckInDate)
-            .Null()
+            .NotNull()
             .WithMessage("Check-in date is required");
 
         // Validate check-in date is not in the past

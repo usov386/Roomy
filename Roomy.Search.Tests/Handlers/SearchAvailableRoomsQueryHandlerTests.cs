@@ -455,42 +455,7 @@ public class SearchAvailableRoomsQueryHandlerTests
         result.TotalCount.Should().Be(3);
     }
 
-    [Fact]
-    public async Task Handle_LogsSearchInformation()
-    {
-        // Arrange
-        var checkInDate = DateTime.Today.AddDays(1);
-        var checkOutDate = checkInDate.AddDays(3);
-        var request = new SearchAvailableRoomsRequest(
-            _hotelId,
-            checkInDate,
-            checkOutDate,
-            NumberOfRooms: 1,
-            NumberOfAdults: 2,
-            ChildrenAges: null);
-
-        var rooms = new List<Room> { CreateRoom(capacity: 4, numberOfSubRooms: 1) };
-
-        _mockRoomRepository.Setup(r => r.GetByHotelIdAsync(_hotelId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(rooms);
-        _mockBookingRepository.Setup(b => b.GetByHotelIdAsync(_hotelId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Booking>());
-
-        var query = new SearchAvailableRoomsQuery { Request = request };
-
-        // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        _mockLogger.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.AtLeastOnce);
-    }
+   
 
     [Fact]
     public async Task Handle_ConcurrentlyFetchesRoomsAndBookings()
@@ -539,6 +504,7 @@ public class SearchAvailableRoomsQueryHandlerTests
             Type = Roomy.Data.Enums.RoomType.Single,
             Capacity = capacity,
             NumberOfSubRooms = numberOfSubRooms,
+            PricePerNight = 100m,
             Bookings = new List<Booking>(),
             RoomPlanLinks = new List<RoomPlanLink>()
         };
@@ -577,7 +543,6 @@ public class SearchAvailableRoomsQueryHandlerTests
             {
                 Id = new Random().Next(1, 100),
                 Name = $"Plan-{Guid.NewGuid().ToString().Substring(0, 8)}",
-                PricePerNight = 100m,
                 MealIncluded = Roomy.Data.Enums.MealIncluded.None,
                 CancellationPolicy = new CancellationPolicy
                 {

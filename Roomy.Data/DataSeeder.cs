@@ -85,7 +85,8 @@ public static class DataSeeder
                 Number = "101", 
                 Type = RoomType.Single, 
                 Capacity = 1,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 100m
             },
             new Room 
             { 
@@ -93,7 +94,8 @@ public static class DataSeeder
                 Number = "102", 
                 Type = RoomType.Double, 
                 Capacity = 2,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 120m
             },
             new Room 
             { 
@@ -101,7 +103,8 @@ public static class DataSeeder
                 Number = "103", 
                 Type = RoomType.Suite, 
                 Capacity = 3,
-                NumberOfSubRooms = 2
+                NumberOfSubRooms = 2,
+                PricePerNight = 150m
             },
             new Room 
             { 
@@ -109,7 +112,8 @@ public static class DataSeeder
                 Number = "104", 
                 Type = RoomType.Family, 
                 Capacity = 4,
-                NumberOfSubRooms = 3
+                NumberOfSubRooms = 3,
+                PricePerNight = 180m
             },
             new Room 
             { 
@@ -117,7 +121,8 @@ public static class DataSeeder
                 Number = "105", 
                 Type = RoomType.Double, 
                 Capacity = 2,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 120m
             }
         });
 
@@ -131,7 +136,8 @@ public static class DataSeeder
                 Number = "201", 
                 Type = RoomType.Single, 
                 Capacity = 1,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 50m
             },
             new Room 
             { 
@@ -139,7 +145,8 @@ public static class DataSeeder
                 Number = "202", 
                 Type = RoomType.Double, 
                 Capacity = 2,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 60m
             },
             new Room 
             { 
@@ -147,7 +154,8 @@ public static class DataSeeder
                 Number = "203", 
                 Type = RoomType.Double, 
                 Capacity = 2,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 60m
             },
             new Room 
             { 
@@ -155,7 +163,8 @@ public static class DataSeeder
                 Number = "204", 
                 Type = RoomType.Family, 
                 Capacity = 3,
-                NumberOfSubRooms = 2
+                NumberOfSubRooms = 2,
+                PricePerNight = 80m
             }
         });
 
@@ -169,7 +178,8 @@ public static class DataSeeder
                 Number = "301", 
                 Type = RoomType.Suite, 
                 Capacity = 2,
-                NumberOfSubRooms = 2
+                NumberOfSubRooms = 2,
+                PricePerNight = 200m
             },
             new Room 
             { 
@@ -177,7 +187,8 @@ public static class DataSeeder
                 Number = "302", 
                 Type = RoomType.Suite, 
                 Capacity = 3,
-                NumberOfSubRooms = 2
+                NumberOfSubRooms = 2,
+                PricePerNight = 220m
             },
             new Room 
             { 
@@ -185,7 +196,8 @@ public static class DataSeeder
                 Number = "303", 
                 Type = RoomType.Family, 
                 Capacity = 4,
-                NumberOfSubRooms = 3
+                NumberOfSubRooms = 3,
+                PricePerNight = 250m
             },
             new Room 
             { 
@@ -193,7 +205,8 @@ public static class DataSeeder
                 Number = "304", 
                 Type = RoomType.Double, 
                 Capacity = 2,
-                NumberOfSubRooms = 1
+                NumberOfSubRooms = 1,
+                PricePerNight = 180m
             }
         });
 
@@ -204,7 +217,7 @@ public static class DataSeeder
         var standardPlan = new RoomPlan
         {
             Name = "Standard",
-            PricePerNight = 100m, // Fixed standard price
+            PriceFactor = 1m,
             MealIncluded = MealIncluded.Breakfast,
             CreatedAt = DateTime.UtcNow
         };
@@ -223,7 +236,7 @@ public static class DataSeeder
         var budgetPlan = new RoomPlan
         {
             Name = "Budget (Non-Refundable)",
-            PricePerNight = 85m, // 15% discount
+            PriceFactor = 0.85m,
             MealIncluded = MealIncluded.None,
             CreatedAt = DateTime.UtcNow
         };
@@ -241,7 +254,7 @@ public static class DataSeeder
         var premiumPlan = new RoomPlan
         {
             Name = "Premium",
-            PricePerNight = 115m, // 15% premium
+            PriceFactor = 1.50m,
             MealIncluded = MealIncluded.BreakfastLunchDinner,
             CreatedAt = DateTime.UtcNow
         };
